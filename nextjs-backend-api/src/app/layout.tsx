@@ -1,16 +1,10 @@
-/**
- * Root Layout
- * 
- * This is the root layout component for the Next.js App Router.
- * Wraps all page and API routes.
- * For a backend-only API, this is minimal.
- */
-
 import type { Metadata } from 'next';
+import '@/app/globals.css';
+import NavBar from '@/components/NavBar';
 
 export const metadata: Metadata = {
-  title: 'Next.js Backend API',
-  description: 'RESTful API server built with Next.js and TypeScript',
+  title: 'LearnHub',
+  description: 'Mini learning platform assignment project',
 };
 
 export default function RootLayout({
@@ -20,7 +14,10 @@ export default function RootLayout({
 }): React.ReactElement {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <NavBar />
+        <main className="container page-content">{children}</main>
+      </body>
     </html>
   );
 }
