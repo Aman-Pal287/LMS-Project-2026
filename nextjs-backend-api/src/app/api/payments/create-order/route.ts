@@ -33,6 +33,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'Course not found.' }, { status: 404 });
   }
 
+  const existingEnrollment = await prisma.enrollment.findUnique({
+    where: {
+      userId_courseId: {
+        userId: session.userId,
+        courseId: course.id,
+      },
+    },
+  });
+
+  if (existingEnrollment?.razorpayPaymentId) {
+    return NextResponse.json({ error: 'You already purchased this course.' }, { status: 409 });
+  }
+
   const razorpay = new Razorpay({
     key_id: razorpayKeyId,
     key_secret: razorpayKeySecret,
@@ -45,6 +58,24 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     notes: {
       courseId: course.id,
       userId: session.userId,
+    },
+  });
+
+  await prisma.enrollment.upsert({
+    where: {
+      userId_courseId: {
+        userId: session.userId,
+        courseId: course.id,
+      },
+    },
+    update: {
+      razorpayOrderId: order.id,
+      razorpayPaymentId: null,
+    },
+    create: {
+      userId: session.userId,
+      courseId: course.id,
+      razorpayOrderId: order.id,
     },
   });
 

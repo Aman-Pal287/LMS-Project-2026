@@ -29,17 +29,24 @@ interface BuyButtonProps {
   courseId: string;
   courseTitle: string;
   isLoggedIn: boolean;
+  isPurchased: boolean;
 }
 
 export default function BuyButton({
   courseId,
   courseTitle,
   isLoggedIn,
+  isPurchased,
 }: BuyButtonProps): React.ReactElement {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const handleBuy = async (): Promise<void> => {
+    if (isPurchased) {
+      alert('You already purchased this course.');
+      return;
+    }
+
     if (!isLoggedIn) {
       router.push('/login');
       return;
@@ -82,8 +89,25 @@ export default function BuyButton({
         theme: {
           color: '#2563eb',
         },
-        handler: function () {
-          alert('Payment successful.');
+        handler: async function (response: {
+          razorpay_order_id: string;
+          razorpay_payment_id: string;
+          razorpay_signature: string;
+        }) {
+          const verifyRes = await fetch('/api/payments/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(response),
+          });
+
+          const verifyData = await verifyRes.json();
+
+          if (!verifyRes.ok) {
+            alert(verifyData.error || 'Payment verification failed.');
+            return;
+          }
+
+          alert('Payment successful. Course added to your purchased courses.');
           router.refresh();
         },
       };
@@ -98,8 +122,13 @@ export default function BuyButton({
   };
 
   return (
-    <button className="primary-btn" onClick={handleBuy} type="button" disabled={loading}>
-      {loading ? 'Processing...' : 'Buy Course'}
+    <button
+      className="primary-btn"
+      onClick={handleBuy}
+      type="button"
+      disabled={loading || isPurchased}
+    >
+      {isPurchased ? 'Purchased' : loading ? 'Processing...' : 'Buy Course'}
     </button>
   );
 }

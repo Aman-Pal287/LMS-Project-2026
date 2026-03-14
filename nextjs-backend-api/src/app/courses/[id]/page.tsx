@@ -22,6 +22,19 @@ export default async function CoursePage({ params }: CoursePageProps): Promise<R
     notFound();
   }
 
+  const enrollment = session
+    ? await prisma.enrollment.findUnique({
+        where: {
+          userId_courseId: {
+            userId: session.userId,
+            courseId: course.id,
+          },
+        },
+      })
+    : null;
+
+  const isPurchased = Boolean(enrollment?.razorpayPaymentId);
+
   return (
     <section className="course-detail">
       <Image
@@ -35,7 +48,13 @@ export default async function CoursePage({ params }: CoursePageProps): Promise<R
         <h1>{course.title}</h1>
         <p>{course.description}</p>
         <h3>Price: INR {course.price}</h3>
-        <BuyButton courseId={course.id} courseTitle={course.title} isLoggedIn={Boolean(session)} />
+        <BuyButton
+          courseId={course.id}
+          courseTitle={course.title}
+          isLoggedIn={Boolean(session)}
+          isPurchased={isPurchased}
+        />
+        {isPurchased && <p className="success-text">This course is already in your purchased list.</p>}
         {!session && <p className="muted">Login is required before checkout.</p>}
       </div>
     </section>
