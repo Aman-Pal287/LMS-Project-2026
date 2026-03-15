@@ -25,6 +25,7 @@ model Course {
   imageUrl    String
   createdAt   DateTime     @default(now())
   enrollments Enrollment[]
+  videos      CourseVideo[]
 }
 
 model Enrollment {
@@ -39,4 +40,17 @@ model Enrollment {
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
+}
+
+model CourseVideo {
+  id           String   @id @default(cuid())
+  courseId     String
+  title        String
+  imagekitPath String
+  order        Int
+  createdAt    DateTime @default(now())
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, order])
 }

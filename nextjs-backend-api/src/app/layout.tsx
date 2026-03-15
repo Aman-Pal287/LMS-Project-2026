@@ -14,7 +14,7 @@ export default function RootLayout({
 }): React.ReactElement {
   return (
     <html lang="en">
-      <body>
+      <body suppressHydrationWarning>
         <NavBar />
         <main className="container page-content">{children}</main>
       </body>

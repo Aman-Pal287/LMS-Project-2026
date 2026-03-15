@@ -76,7 +76,7 @@ export default async function HomePage(): Promise<React.ReactElement> {
             <ul className="purchased-list">
               {purchasedCourses.map((course) => (
                 <li key={course.id}>
-                  <Link href={`/courses/${course.id}`}>{course.title}</Link>
+                  <Link href={`/learn/${course.id}`}>{course.title}</Link>
                 </li>
               ))}
             </ul>

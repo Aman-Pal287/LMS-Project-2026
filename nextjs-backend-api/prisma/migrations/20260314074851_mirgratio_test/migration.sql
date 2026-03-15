@@ -30,6 +30,7 @@ CREATE TABLE "Enrollment" (
     "razorpayOrderId" TEXT,
     "razorpayPaymentId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT FALSE,
 
     CONSTRAINT "Enrollment_pkey" PRIMARY KEY ("id")
 );

@@ -37,13 +37,49 @@ const courses = [
   },
 ];
 
+const courseVideosBySlug = {
+  'nextjs-for-beginners': [
+    { title: 'Course Intro', imagekitPath: '/sample-videos/nextjs-intro.mp4', order: 1 },
+    { title: 'App Router Basics', imagekitPath: '/sample-videos/nextjs-routing.mp4', order: 2 },
+  ],
+  'typescript-masterclass': [
+    { title: 'TypeScript Setup', imagekitPath: '/sample-videos/ts-setup.mp4', order: 1 },
+    { title: 'Types and Interfaces', imagekitPath: '/sample-videos/ts-interfaces.mp4', order: 2 },
+  ],
+  'postgresql-essentials': [
+    { title: 'Database Fundamentals', imagekitPath: '/sample-videos/pg-basics.mp4', order: 1 },
+    { title: 'Indexes and Performance', imagekitPath: '/sample-videos/pg-indexes.mp4', order: 2 },
+  ],
+  'backend-apis-with-prisma': [
+    { title: 'Prisma Setup', imagekitPath: '/sample-videos/prisma-setup.mp4', order: 1 },
+    { title: 'Relations and Queries', imagekitPath: '/sample-videos/prisma-relations.mp4', order: 2 },
+  ],
+};
+
 async function main() {
   for (const course of courses) {
-    await prisma.course.upsert({
+    const upsertedCourse = await prisma.course.upsert({
       where: { slug: course.slug },
       update: course,
       create: course,
     });
+
+    const videos = courseVideosBySlug[course.slug] || [];
+
+    await prisma.courseVideo.deleteMany({
+      where: { courseId: upsertedCourse.id },
+    });
+
+    if (videos.length > 0) {
+      await prisma.courseVideo.createMany({
+        data: videos.map((video) => ({
+          courseId: upsertedCourse.id,
+          title: video.title,
+          imagekitPath: video.imagekitPath,
+          order: video.order,
+        })),
+      });
+    }
   }
 
   console.log('Seeded courses:', courses.length);

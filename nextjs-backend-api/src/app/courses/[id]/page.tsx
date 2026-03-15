@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import BuyButton from '@/components/BuyButton';
 import { getCurrentSession } from '@/lib/auth';
@@ -54,7 +55,14 @@ export default async function CoursePage({ params }: CoursePageProps): Promise<R
           isLoggedIn={Boolean(session)}
           isPurchased={isPurchased}
         />
-        {isPurchased && <p className="success-text">This course is already in your purchased list.</p>}
+        {isPurchased && (
+          <>
+            <p className="success-text">This course is already in your purchased list.</p>
+            <Link href={`/learn/${course.id}`} className="secondary-btn">
+              Go to Course Content
+            </Link>
+          </>
+        )}
         {!session && <p className="muted">Login is required before checkout.</p>}
       </div>
     </section>

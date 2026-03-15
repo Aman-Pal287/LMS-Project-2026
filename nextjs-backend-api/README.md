@@ -7,8 +7,10 @@ Mini full-stack learning platform built with Next.js App Router + PostgreSQL + R
 - Home page with dummy course list
 - Course detail page with buy button
 - Razorpay checkout integration (order creation)
+- Razorpay payment verification + purchase persistence
 - Simple auth: register, login, logout
 - PostgreSQL with Prisma ORM
+- Purchased course content route with video playback (ImageKit URLs)
 
 ## Tech Stack
 
@@ -17,6 +19,7 @@ Mini full-stack learning platform built with Next.js App Router + PostgreSQL + R
 - Prisma + PostgreSQL
 - JWT session cookies
 - Razorpay
+- ImageKit (video hosting endpoint)
 
 ## Setup
 
@@ -38,6 +41,7 @@ copy .env.example .env.local
 - `JWT_SECRET`
 - `RAZORPAY_KEY_ID`
 - `RAZORPAY_KEY_SECRET`
+- `IMAGEKIT_URL_ENDPOINT`
 
 4. Generate Prisma client + migrate DB:
 
@@ -64,6 +68,7 @@ Open: `http://localhost:3000`
 
 - `/` -> course list
 - `/courses/:id` -> course detail + buy
+- `/learn/:courseId` -> purchased course videos
 - `/login`
 - `/register`
 
@@ -76,9 +81,11 @@ Open: `http://localhost:3000`
 - `GET /api/courses`
 - `GET /api/courses/:id`
 - `POST /api/payments/create-order`
+- `POST /api/payments/verify`
 
 ## Notes
 
 - Buy button requires logged-in user.
 - Razorpay popup appears after order creation.
-- Payment verification webhook is not implemented yet (can be added next).
+- Course is marked purchased only after successful payment verification.
+- Upload your MP4 files in ImageKit and set paths in `prisma/seed.js`.
